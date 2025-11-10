@@ -1,79 +1,162 @@
 {% extends 'base.html' %}
 
-{% block title %}Instructor Dashboard - LMS{% endblock %}
+{% block title %}Trainer Dashboard - LMS{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <h1 class="mt-4">Instructor Dashboard</h1>
-            <p class="lead">Welcome back, {{ user.first_name }}!</p>
-        </div>
-    </div>
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
 
-    {% if instructor %}
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        {% if instructor.profile_picture %}
-                            <img src="{{ instructor.profile_picture.url }}" alt="{{ instructor.full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
-                                <i class="bi bi-person" style="font-size: 4rem;"></i>
-                            </div>
-                        {% endif %}
-                        <h5>{{ instructor.full_name }}</h5>
-                        <p class="text-muted">{{ instructor.email }}</p>
-                        <a href="{% url 'instructors:profile' %}" class="btn btn-primary">View Profile</a>
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Trainer Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                     </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                        <i class="bi bi-calendar"></i>
+                        This week
+                    </button>
                 </div>
             </div>
 
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>My Courses</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if courses %}
-                            <div class="row">
-                                {% for course in courses %}
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h6 class="card-title">{{ course.title }}</h6>
-                                                <p class="card-text">{{ course.category.name }}</p>
-                                                <p class="text-muted">
-                                                    <small>
-                                                        <i class="bi bi-book"></i> {{ course.modules.count }} modules<br>
-                                                        <i class="bi bi-people"></i> {{ course.enrollments.count }} students
-                                                    </small>
-                                                </p>
-                                                <a href="{% url 'instructors:course_detail' course.id %}" class="btn btn-sm btn-outline-primary">Manage</a>
-                                            </div>
-                                        </div>
+            <!-- Welcome Message -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Welcome, {{ instructor.full_name }}!</h4>
+                <p>You are logged in as a trainer. Here you can manage your courses, students, and assignments.</p>
+                <hr>
+                <p class="mb-0">Trainer ID: {{ instructor.instructor_id }}</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Courses
                                     </div>
-                                {% endfor %}
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_courses }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-book fa-2x text-gray-300"></i>
+                                </div>
                             </div>
-                        {% else %}
-                            <p>You are not teaching any courses yet.</p>
-                            <a href="#" class="btn btn-primary">Create Course</a>
-                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Total Students
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-people fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Assignments
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_assignments }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-file-earmark-text fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Pending Reviews
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_reviews }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-star fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% else %}
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-info">
-                    <h4>Instructor Profile Required</h4>
-                    <p>You need to create an instructor profile to access your dashboard.</p>
-                    <a href="#" class="btn btn-primary">Create Profile</a>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Activity</th>
+                                            <th>Course</th>
+                                            <th>Student</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for activity in recent_activity %}
+                                        <tr>
+                                            <td>Enrollment</td>
+                                            <td>{{ activity.course.title }}</td>
+                                            <td>{{ activity.student.full_name }}</td>
+                                            <td>{{ activity.enrollment_date|date:"M d, Y" }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No recent activity</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Trainer Dashboard JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Trainer dashboard loaded');
+        
+        // Add any trainer-specific JavaScript here
+    });
+</script>
 {% endblock %}

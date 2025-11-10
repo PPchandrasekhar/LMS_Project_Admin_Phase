@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Trainer Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">About</h1>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Welcome, {{ instructor.full_name }}!</h4>
+                <p>Learn more about the Learning Management System.</p>
+            </div>
+
+            <!-- About Content -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">About This System</h6>
+                        </div>
+                        <div class="card-body">
+                            <h5>Learning Management System (LMS)</h5>
+                            <p>
+                                The Learning Management System is a comprehensive platform designed to facilitate online education and training. 
+                                It provides tools for instructors to create, manage, and deliver courses, while offering students a seamless learning experience.
+                            </p>
+                            
+                            <h5>Key Features</h5>
+                            <ul>
+                                <li><strong>Course Management:</strong> Create and organize courses with modules and lessons</li>
+                                <li><strong>Student Tracking:</strong> Monitor student progress and performance</li>
+                                <li><strong>Assignment System:</strong> Create, distribute, and grade assignments</li>
+                                <li><strong>Communication Tools:</strong> Messaging system for instructor-student interaction</li>
+                                <li><strong>Resource Library:</strong> Upload and manage course materials and videos</li>
+                                <li><strong>Analytics Dashboard:</strong> View detailed reports on course performance</li>
+                                <li><strong>Scheduling:</strong> Manage class schedules and events</li>
+                            </ul>
+                            
+                            <h5>For Instructors</h5>
+                            <p>
+                                As an instructor, you have access to a powerful set of tools to enhance your teaching experience. 
+                                You can create engaging content, track student progress, provide feedback, and communicate effectively with your students.
+                            </p>
+                            
+                            <h5>Getting Started</h5>
+                            <p>
+                                To get started, navigate through the sidebar menu to access different sections of the system. 
+                                Each section provides specific tools and features to help you manage your courses effectively.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">System Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Version:</strong> 1.0.0</p>
+                            <p><strong>Last Updated:</strong> November 2025</p>
+                            <p><strong>Developed By:</strong> LMS Development Team</p>
+                            
+                            <hr>
+                            
+                            <h6>Support</h6>
+                            <p>If you need assistance, please contact our support team:</p>
+                            <p><i class="bi bi-envelope"></i> support@lms.edu</p>
+                            <p><i class="bi bi-telephone"></i> +1 (555) 123-4567</p>
+                            
+                            <hr>
+                            
+                            <h6>Documentation</h6>
+                            <p>Access our comprehensive documentation:</p>
+                            <a href="#" class="btn btn-primary btn-sm">User Guide</a>
+                            <a href="#" class="btn btn-outline-primary btn-sm">API Documentation</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Links</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><a href="{% url 'instructors:dashboard' %}">Dashboard</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:my_courses' %}">My Courses</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:my_students' %}">My Students</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:materials' %}">Materials</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:videos' %}">Videos</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:assignments' %}">Assignments</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:schedule' %}">Schedule</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:messages' %}">Messages</a></li>
+                                <li class="mb-2"><a href="{% url 'instructors:settings' %}">Settings</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // About JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('About page loaded');
+        
+        // Add any about-specific JavaScript here
+    });
+</script>
+{% endblock %}

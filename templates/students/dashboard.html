@@ -3,81 +3,191 @@
 {% block title %}Student Dashboard - LMS{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <h1 class="mt-4">Student Dashboard</h1>
-            <p class="lead">Welcome back, {{ user.first_name }}!</p>
-        </div>
-    </div>
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'students:dashboard' %}">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-book"></i>
+                            My Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-file-earmark-text"></i>
+                            Assignments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-calendar"></i>
+                            Schedule
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-chat-dots"></i>
+                            Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear"></i>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-    {% if student %}
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center">
-                        {% if student.profile_picture %}
-                            <img src="{{ student.profile_picture.url }}" alt="{{ student.full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
-                                <i class="bi bi-person" style="font-size: 4rem;"></i>
-                            </div>
-                        {% endif %}
-                        <h5>{{ student.full_name }}</h5>
-                        <p class="text-muted">{{ student.email }}</p>
-                        <a href="{% url 'students:profile' %}" class="btn btn-primary">View Profile</a>
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Student Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                     </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                        <i class="bi bi-calendar"></i>
+                        This week
+                    </button>
                 </div>
             </div>
 
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>My Courses</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if enrollments %}
-                            <div class="row">
-                                {% for enrollment in enrollments %}
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h6 class="card-title">{{ enrollment.course.title }}</h6>
-                                                <p class="card-text">{{ enrollment.course.category.name }}</p>
-                                                <div class="progress">
-                                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ enrollment.progress }}" aria-valuemin="0" aria-valuemax="100">
-                                                        {{ enrollment.progress }}%
-                                                    </div>
-                                                </div>
-                                                <p class="mt-2">
-                                                    <small class="text-muted">
-                                                        Instructor: {{ enrollment.course.instructor.full_name }}
-                                                    </small>
-                                                </p>
-                                                <a href="{% url 'courses:course_detail' enrollment.course.id %}" class="btn btn-sm btn-outline-primary">Continue</a>
-                                            </div>
-                                        </div>
+            <!-- Welcome Message -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Welcome, {{ user.student.full_name }}!</h4>
+                <p>You are logged in as a student. Here you can access your courses, assignments, and track your progress.</p>
+                <hr>
+                <p class="mb-0">Student ID: {{ user.student.student_id }}</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Enrolled Courses
                                     </div>
-                                {% endfor %}
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-book fa-2x text-gray-300"></i>
+                                </div>
                             </div>
-                        {% else %}
-                            <p>You are not enrolled in any courses yet.</p>
-                            <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Browse Courses</a>
-                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Completed Courses
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Pending Assignments
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-file-earmark-text fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Average Grade
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0%</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-star fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% else %}
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-info">
-                    <h4>Student Profile Required</h4>
-                    <p>You need to create a student profile to access your dashboard.</p>
-                    <a href="#" class="btn btn-primary">Create Profile</a>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Activity</th>
+                                            <th>Course</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="3" class="text-center">No recent activity</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+        </main>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Student Dashboard JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Student dashboard loaded');
+        
+        // Add any student-specific JavaScript here
+    });
+</script>
 {% endblock %}

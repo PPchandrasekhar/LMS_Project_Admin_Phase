@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - LMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h3 class="text-center">LMS Login</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="user_type" class="form-label">User Type</label>
+                            <select class="form-select" id="user_type" name="user_type" required>
+                                <option value="">Select User Type</option>
+                                <option value="admin">Admin</option>
+                                <option value="trainer">Trainer</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3" id="admin_fields">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+                        </div>
+                        
+                        <div class="mb-3" id="trainer_fields" style="display: none;">
+                            <label for="trainer_id" class="form-label">Trainer ID</label>
+                            <input type="text" class="form-control" id="trainer_id" name="trainer_id" placeholder="Enter trainer ID">
+                            
+                            <label for="trainer_name" class="form-label mt-2">Trainer Name</label>
+                            <input type="text" class="form-control" id="trainer_name" name="trainer_name" placeholder="Enter trainer name">
+                        </div>
+                        
+                        <div class="mb-3" id="student_fields" style="display: none;">
+                            <label for="student_id" class="form-label">Student ID</label>
+                            <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter student ID">
+                            
+                            <label for="student_name" class="form-label mt-2">Student Name</label>
+                            <input type="text" class="form-control" id="student_name" name="student_name" placeholder="Enter student name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userTypeSelect = document.getElementById('user_type');
+        const adminFields = document.getElementById('admin_fields');
+        const trainerFields = document.getElementById('trainer_fields');
+        const studentFields = document.getElementById('student_fields');
+        
+        userTypeSelect.addEventListener('change', function() {
+            // Hide all fields first
+            adminFields.style.display = 'none';
+            trainerFields.style.display = 'none';
+            studentFields.style.display = 'none';
+            
+            // Show fields based on user type
+            if (this.value === 'admin') {
+                adminFields.style.display = 'block';
+            } else if (this.value === 'trainer') {
+                trainerFields.style.display = 'block';
+            } else if (this.value === 'student') {
+                studentFields.style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}

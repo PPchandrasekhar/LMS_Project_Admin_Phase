@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - Trainer Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Contact</h1>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Welcome, {{ instructor.full_name }}!</h4>
+                <p>Get in touch with the administration team or technical support.</p>
+            </div>
+
+            <!-- Contact Content -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Send a Message</h6>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="contactName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="contactName" value="{{ instructor.full_name }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactEmail" class="form-label">Your Email</label>
+                                    <input type="email" class="form-control" id="contactEmail" value="{{ instructor.email }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactSubject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="contactSubject" placeholder="Enter subject">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactDepartment" class="form-label">Department</label>
+                                    <select class="form-select" id="contactDepartment">
+                                        <option value="">Select Department</option>
+                                        <option value="technical">Technical Support</option>
+                                        <option value="administrative">Administrative</option>
+                                        <option value="billing">Billing</option>
+                                        <option value="general">General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactMessage" class="form-label">Message</label>
+                                    <textarea class="form-control" id="contactMessage" rows="6" placeholder="Enter your message here..."></textarea>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="contactCopy">
+                                    <label class="form-check-label" for="contactCopy">Send me a copy of this message</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Contact Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <h5>Administration Office</h5>
+                            <p><i class="bi bi-geo-alt"></i> 123 Education Street, Learning City, LC 12345</p>
+                            <p><i class="bi bi-telephone"></i> +1 (555) 123-4567</p>
+                            <p><i class="bi bi-envelope"></i> admin@lms.edu</p>
+                            <p><i class="bi bi-clock"></i> Mon-Fri: 9:00 AM - 5:00 PM</p>
+                            
+                            <hr>
+                            
+                            <h5>Technical Support</h5>
+                            <p><i class="bi bi-telephone"></i> +1 (555) 987-6543</p>
+                            <p><i class="bi bi-envelope"></i> support@lms.edu</p>
+                            <p><i class="bi bi-clock"></i> 24/7 Support</p>
+                            
+                            <hr>
+                            
+                            <h5>Emergency Contact</h5>
+                            <p><i class="bi bi-telephone"></i> +1 (555) 555-5555</p>
+                            <p><i class="bi bi-envelope"></i> emergency@lms.edu</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Frequently Asked Questions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="accordion" id="faqAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faqHeading1">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                            How do I reset my password?
+                                        </button>
+                                    </h2>
+                                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            You can reset your password in the Settings section under the Security tab.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faqHeading2">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                            How do I upload course materials?
+                                        </button>
+                                    </h2>
+                                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Navigate to the Materials section and click "Upload Material" to add new course materials.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="faqHeading3">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                            How do I grade assignments?
+                                        </button>
+                                    </h2>
+                                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Go to the Assignments section, select an assignment, and then review submissions to grade them.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Contact JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Contact page loaded');
+        
+        // Add any contact-specific JavaScript here
+    });
+</script>
+{% endblock %}

@@ -5,14 +5,16 @@ app_name = 'instructors'
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('courses/', views.my_courses, name='my_courses'),
+    path('my-courses/', views.my_courses, name='my_courses'),
     path('courses/<int:course_id>/', views.course_detail, name='course_detail'),
-    path('courses/<int:course_id>/lessons/', views.lesson_list, name='lesson_list'),
-    path('courses/<int:course_id>/lessons/add/', views.add_lesson, name='add_lesson'),
-    path('lessons/<int:lesson_id>/edit/', views.edit_lesson, name='edit_lesson'),
-    path('lessons/<int:lesson_id>/delete/', views.delete_lesson, name='delete_lesson'),
+    path('my-students/', views.my_students, name='my_students'),
+    path('materials/', views.materials, name='materials'),
+    path('videos/', views.videos, name='videos'),
     path('assignments/', views.assignments, name='assignments'),
     path('assignments/<int:assignment_id>/', views.assignment_detail, name='assignment_detail'),
-    path('assignments/<int:assignment_id>/submissions/', views.submission_list, name='submission_list'),
-    path('profile/', views.profile, name='profile'),
+    path('schedule/', views.schedule, name='schedule'),
+    path('messages/', views.messages, name='messages'),
+    path('settings/', views.settings, name='settings'),
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
 ]

@@ -16,20 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
-
-def home(request):
-    return render(request, 'home.html')
+from admin_panel.views import custom_login, custom_logout
 
 urlpatterns = [
-    path('', home, name='home'),
     path('admin/', admin.site.urls),
+    path('', custom_login, name='login'),
+    path('logout/', custom_logout, name='logout'),
+    path('admin-panel/', include('admin_panel.urls')),
     path('courses/', include('courses.urls')),
     path('students/', include('students.urls')),
     path('instructors/', include('instructors.urls')),
-    path('admin-panel/', include('admin_panel.urls')),
 ]
 
 # Serve media files during development

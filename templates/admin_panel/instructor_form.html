@@ -40,11 +40,12 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="{{ form.user.id_for_label }}" class="form-label">User Account</label>
-                                            {{ form.user }}
-                                            {% if form.user.errors %}
-                                                <div class="text-danger">{{ form.user.errors }}</div>
+                                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                                            {{ form.password }}
+                                            {% if form.password.errors %}
+                                                <div class="text-danger">{{ form.password.errors }}</div>
                                             {% endif %}
+                                            <div class="form-text">Leave blank to auto-generate a password</div>
                                         </div>
                                     </div>
                                 </div>
@@ -157,7 +158,7 @@
                             <p>Fill in the instructor details:</p>
                             <ul>
                                 <li><strong>Instructor ID:</strong> Unique identifier for the instructor</li>
-                                <li><strong>User Account:</strong> Link to existing user account</li>
+                                <li><strong>Password:</strong> Password for the instructor's account (leave blank to auto-generate)</li>
                                 <li><strong>Name:</strong> First and last name</li>
                                 <li><strong>Email:</strong> Primary contact email</li>
                                 <li><strong>Phone:</strong> Contact phone number</li>

@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from courses.models import Course, Category, Material, Video
 from students.models import Student, Enrollment, AssignmentSubmission
 from instructors.models import Instructor
-from .forms import CourseForm, StudentForm, InstructorForm, CategoryForm, MaterialForm, VideoForm
+from .forms import CourseForm, StudentForm, InstructorForm, CategoryForm, MaterialForm, VideoForm, EnrollmentForm
 
 
 def is_admin(user):
@@ -824,3 +824,171 @@ def delete_category(request, category_id):
         'category': category,
     }
     return render(request, 'admin_panel/category_confirm_delete.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def enrollment_list(request):
+    enrollments = Enrollment.objects.select_related('student', 'course').all()
+    
+    # Search functionality
+    search_query = request.GET.get('search')
+    if search_query:
+        enrollments = enrollments.filter(
+            Q(student__first_name__icontains=search_query) |
+            Q(student__last_name__icontains=search_query) |
+            Q(course__title__icontains=search_query)
+        )
+    
+    # Filter by course
+    course_id = request.GET.get('course')
+    if course_id:
+        enrollments = enrollments.filter(course_id=course_id)
+    
+    # Filter by student
+    student_id = request.GET.get('student')
+    if student_id:
+        enrollments = enrollments.filter(student_id=student_id)
+    
+    paginator = Paginator(enrollments, 10)  # Show 10 enrollments per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all courses and students for filter dropdowns
+    courses = Course.objects.all()
+    students = Student.objects.all()
+    
+    context = {
+        'page_obj': page_obj,
+        'courses': courses,
+        'students': students,
+        'search_query': search_query,
+        'current_course': course_id,
+        'current_student': student_id,
+    }
+    return render(request, 'admin_panel/enrollment_list.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def add_enrollment(request):
+    if request.method == 'POST':
+        form = EnrollmentForm(request.POST)
+        if form.is_valid():
+            # Check if enrollment already exists
+            student = form.cleaned_data['student']
+            course = form.cleaned_data['course']
+            
+            if Enrollment.objects.filter(student=student, course=course).exists():
+                messages.error(request, 'This student is already enrolled in this course.')
+            else:
+                enrollment = form.save(commit=False)
+                enrollment.completion_status = 'enrolled'
+                enrollment.progress = 0
+                enrollment.save()
+                messages.success(request, 'Enrollment added successfully.')
+                return redirect('admin_panel:enrollment_list')
+    else:
+        form = EnrollmentForm()
+    
+    context = {
+        'form_title': 'Add New Enrollment',
+        'submit_button': 'Add Enrollment',
+        'form': form,
+    }
+    return render(request, 'admin_panel/enrollment_form.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def delete_enrollment(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    
+    if request.method == 'POST':
+        enrollment.delete()
+        messages.success(request, 'Enrollment deleted successfully.')
+        return redirect('admin_panel:enrollment_list')
+    
+    context = {
+        'enrollment': enrollment,
+    }
+    return render(request, 'admin_panel/enrollment_confirm_delete.html', context)
+
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from instructors.models import Instructor
+from students.models import Student
+
+
+def custom_login(request):
+    if request.method == 'POST':
+        user_type = request.POST.get('user_type')
+        
+        if user_type == 'admin':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None and user.is_staff:
+                login(request, user)
+                return redirect('admin_panel:dashboard')
+            else:
+                messages.error(request, 'Invalid admin credentials or insufficient permissions.')
+                
+        elif user_type == 'trainer':
+            trainer_id = request.POST.get('trainer_id')
+            trainer_name = request.POST.get('trainer_name')
+            password = request.POST.get('password')
+            
+            try:
+                # Find instructor by ID and name
+                instructor = Instructor.objects.get(instructor_id=trainer_id)
+                if instructor.full_name.lower() == trainer_name.lower():
+                    # Check if the instructor has an associated user
+                    if instructor.user:
+                        user = authenticate(request, username=instructor.user.username, password=password)
+                        if user is not None:
+                            login(request, user)
+                            return redirect('instructors:dashboard')
+                        else:
+                            messages.error(request, 'Invalid password for trainer.')
+                    else:
+                        messages.error(request, 'Trainer account not properly configured.')
+                else:
+                    messages.error(request, 'Trainer name does not match.')
+            except Instructor.DoesNotExist:
+                messages.error(request, 'Trainer not found.')
+                
+        elif user_type == 'student':
+            student_id = request.POST.get('student_id')
+            student_name = request.POST.get('student_name')
+            password = request.POST.get('password')
+            
+            try:
+                # Find student by ID and name
+                student = Student.objects.get(student_id=student_id)
+                if student.full_name.lower() == student_name.lower():
+                    # Check if the student has an associated user
+                    if student.user:
+                        user = authenticate(request, username=student.user.username, password=password)
+                        if user is not None:
+                            login(request, user)
+                            return redirect('students:dashboard')
+                        else:
+                            messages.error(request, 'Invalid password for student.')
+                    else:
+                        messages.error(request, 'Student account not properly configured.')
+                else:
+                    messages.error(request, 'Student name does not match.')
+            except Student.DoesNotExist:
+                messages.error(request, 'Student not found.')
+        
+        return render(request, 'login.html')
+    
+    return render(request, 'login.html')
+
+
+def custom_logout(request):
+    logout(request)
+    return redirect('login')

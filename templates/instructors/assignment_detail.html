@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assignment.title }} - Assignment Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ assignment.title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'instructors:assignments' %}" class="btn btn-sm btn-outline-secondary">Back to Assignments</a>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Edit Assignment</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment Info -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Assignment Description</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ assignment.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Submissions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Student Submissions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Submission Date</th>
+                                            <th>Status</th>
+                                            <th>Grade</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for submission in submissions %}
+                                        <tr>
+                                            <td>{{ submission.student.full_name }}</td>
+                                            <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if submission.is_graded %}
+                                                    <span class="badge bg-success">Graded</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if submission.grade %}
+                                                    {{ submission.grade }}/{{ assignment.max_points }}
+                                                {% else %}
+                                                    Not graded
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-primary">Review</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No submissions yet</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Assignment Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Course:</strong> {{ assignment.course.title }}</p>
+                            <p><strong>Due Date:</strong> {{ assignment.due_date|date:"M d, Y" }}</p>
+                            <p><strong>Max Points:</strong> {{ assignment.max_points }}</p>
+                            <p><strong>Created:</strong> {{ assignment.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Total Submissions:</strong> {{ submissions.count }}</p>
+                            <p><strong>Graded:</strong> {{ submissions|length }}</p>
+                            <p><strong>Pending:</strong> 0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Assignment Detail JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Assignment detail page loaded');
+        
+        // Add any assignment detail JavaScript here
+    });
+</script>
+{% endblock %}

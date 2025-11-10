@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - LMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb" class="mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'courses:course_list' %}">Courses</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ course.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 300px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h1 class="card-title">{{ course.title }}</h1>
+                    <p class="text-muted">
+                        <i class="bi bi-tag"></i> {{ course.category.name }} | 
+                        <i class="bi bi-person"></i> {{ course.instructor.full_name }} | 
+                        <i class="bi bi-currency-dollar"></i> ${{ course.price }}
+                    </p>
+                    <p class="card-text">{{ course.description }}</p>
+                    
+                    {% if is_enrolled %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i> You are enrolled in this course.
+                        </div>
+                        <a href="#" class="btn btn-primary">Continue Learning</a>
+                    {% else %}
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-success">
+                                <i class="bi bi-book"></i> Enroll in Course (${{ course.price }})
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right"></i> Login to Enroll
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Modules -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Course Content</h5>
+                </div>
+                <div class="card-body">
+                    {% if modules %}
+                        <div class="accordion" id="modulesAccordion">
+                            {% for module in modules %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ module.id }}">
+                                        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ module.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ module.id }}">
+                                            {{ module.title }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ module.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ module.id }}" data-bs-parent="#modulesAccordion">
+                                        <div class="accordion-body">
+                                            <p>{{ module.description }}</p>
+                                            {% if module.lessons.all %}
+                                                <ul class="list-group">
+                                                    {% for lesson in module.lessons.all %}
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            {{ lesson.title }}
+                                                            <span class="badge bg-primary rounded-pill">
+                                                                {% if lesson.duration %}
+                                                                    {{ lesson.duration }}
+                                                                {% else %}
+                                                                    Video
+                                                                {% endif %}
+                                                            </span>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p class="text-muted">No lessons available in this module yet.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No content available for this course yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Course Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Instructor:</strong> {{ course.instructor.full_name }}</p>
+                    <p><strong>Category:</strong> {{ course.category.name }}</p>
+                    <p><strong>Price:</strong> ${{ course.price }}</p>
+                    <p><strong>Published:</strong> {{ course.created_at|date:"M d, Y" }}</p>
+                    
+                    {% if course.instructor.bio %}
+                        <div class="mt-3">
+                            <h6>About the Instructor</h6>
+                            <p>{{ course.instructor.bio|truncatewords:20 }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Related Courses</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Related courses will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Contact Management</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-primary">
+                        <i class="bi bi-envelope"></i> Send Message
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contact Stats -->
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Messages
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">1,245</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-envelope fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Unread
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">42</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-envelope-open fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Replied
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">1,187</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-reply fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Pending
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">16</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="bi bi-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Messages -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Contact Messages</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Sender</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>john@example.com</td>
+                                    <td>Course Information Request</td>
+                                    <td>2025-11-09 14:30</td>
+                                    <td><span class="badge bg-success">Replied</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-reply"></i> Reply
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jane Smith</td>
+                                    <td>jane@example.com</td>
+                                    <td>Technical Issue</td>
+                                    <td>2025-11-09 10:15</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-reply"></i> Reply
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Robert Johnson</td>
+                                    <td>robert@example.com</td>
+                                    <td>Enrollment Question</td>
+                                    <td>2025-11-08 16:45</td>
+                                    <td><span class="badge bg-success">Replied</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-reply"></i> Reply
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Emily Davis</td>
+                                    <td>emily@example.com</td>
+                                    <td>Payment Issue</td>
+                                    <td>2025-11-08 09:20</td>
+                                    <td><span class="badge bg-danger">Unread</span></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-reply"></i> Reply
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Message Form -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Send New Message</h6>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">Recipient</label>
+                            <select class="form-select" id="recipient">
+                                <option selected>Select recipient...</option>
+                                <option>All Students</option>
+                                <option>All Instructors</option>
+                                <option>Specific User</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" placeholder="Enter subject">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" rows="5" placeholder="Enter your message"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="attachments" class="form-label">Attachments</label>
+                            <input class="form-control" type="file" id="attachments" multiple>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Contact JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Contact page loaded');
+        
+        // Add any contact-specific JavaScript here
+        const sendButton = document.querySelector('.btn-primary');
+        sendButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Show success message
+            alert('Message sent successfully!');
+        });
+    });
+</script>
+{% endblock %}

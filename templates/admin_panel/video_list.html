@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Videos - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Course Videos</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                    </div>
+                    <a href="{% url 'admin_panel:add_video' %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-lg"></i> Upload Video
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="GET" class="d-flex">
+                        <input class="form-control me-2" type="search" name="search" placeholder="Search videos..." value="{{ search_query }}">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <select class="form-select me-2" name="course" onchange="this.form.submit()">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if current_course == course.id|stringformat:"s" %}selected{% endif %}>{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <form method="GET">
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Grid -->
+            <div class="row">
+                {% for video in page_obj %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="ratio ratio-16x9">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="{{ video.title }}">
+                            {% else %}
+                                <div class="bg-dark d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p class="card-text">{{ video.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="bi bi-clock"></i> {{ video.duration|default:"N/A" }}</span>
+                                <span><i class="bi bi-eye"></i> {{ video.view_count }} views</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-primary">{{ video.course.title }}</span>
+                                {% if video.module %}
+                                    <span class="badge bg-info">{{ video.module.title }}</span>
+                                {% endif %}
+                                <span class="badge bg-success">{{ video.get_video_type_display }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ video.get_video_source }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-play"></i> Play
+                                </a>
+                                <a href="{% url 'admin_panel:edit_video' video.id %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <a href="{% url 'admin_panel:delete_video' video.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <h4>No videos found</h4>
+                        <p>There are no videos matching your current filters. <a href="{% url 'admin_panel:add_video' %}">Upload a new video</a> to get started.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Video pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_course %}&course={{ current_course }}{% endif %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_course %}&course={{ current_course }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_course %}&course={{ current_course }}{% endif %}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            <!-- Videos Table -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>All Videos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Video</th>
+                                    <th>Course</th>
+                                    <th>Duration</th>
+                                    <th>Views</th>
+                                    <th>Uploaded</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for video in page_obj %}
+                                <tr>
+                                    <td>{{ video.title }}</td>
+                                    <td>{{ video.course.title }}</td>
+                                    <td>{{ video.duration|default:"N/A" }}</td>
+                                    <td>{{ video.view_count }}</td>
+                                    <td>{{ video.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ video.get_video_source }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="bi bi-play"></i>
+                                            </a>
+                                            <a href="{% url 'admin_panel:edit_video' video.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'admin_panel:delete_video' video.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No videos found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Videos management JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Videos management page loaded');
+        
+        // Add any videos-specific JavaScript here
+        const deleteButtons = document.querySelectorAll('.btn-outline-danger');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const videoName = this.closest('tr').querySelector('td:first-child').textContent;
+                const confirmDelete = confirm(`Are you sure you want to delete the video "${videoName}"? This action cannot be undone.`);
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

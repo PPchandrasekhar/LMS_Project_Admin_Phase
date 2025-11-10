@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Materials - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Course Materials</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'admin_panel:add_material' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-lg"></i> Add Material
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="GET" class="d-flex">
+                        <input class="form-control me-2" type="search" name="search" placeholder="Search materials..." value="{{ search_query }}">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <select class="form-select me-2" name="type" onchange="this.form.submit()">
+                            <option value="">All Types</option>
+                            <option value="pdf" {% if current_type == 'pdf' %}selected{% endif %}>PDF Documents</option>
+                            <option value="doc" {% if current_type == 'doc' %}selected{% endif %}>Word Documents</option>
+                            <option value="ppt" {% if current_type == 'ppt' %}selected{% endif %}>Presentations</option>
+                            <option value="xls" {% if current_type == 'xls' %}selected{% endif %}>Spreadsheets</option>
+                        </select>
+                        <form method="GET">
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <button type="submit" class="btn btn-outline-secondary">Filter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Grid -->
+            <div class="row">
+                {% for material in page_obj %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                {% if material.material_type == 'pdf' %}
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-file-earmark-pdf" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <span class="badge bg-primary">{{ material.material_type|upper }}</span>
+                                {% elif material.material_type == 'doc' %}
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-file-earmark-word" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <span class="badge bg-success">{{ material.material_type|upper }}</span>
+                                {% elif material.material_type == 'ppt' %}
+                                    <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-file-earmark-ppt" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <span class="badge bg-warning">{{ material.material_type|upper }}</span>
+                                {% elif material.material_type == 'xls' %}
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-file-earmark-excel" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <span class="badge bg-success">{{ material.material_type|upper }}</span>
+                                {% else %}
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-file-earmark" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <span class="badge bg-secondary">{{ material.material_type|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <h5 class="card-title">{{ material.title }}</h5>
+                            <p class="card-text">{{ material.description|truncatewords:15 }}</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="bi bi-download"></i> {{ material.download_count }} downloads</span>
+                                <span><i class="bi bi-calendar"></i> {{ material.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ material.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <a href="{% url 'admin_panel:edit_material' material.id %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <a href="{% url 'admin_panel:delete_material' material.id %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-file-earmark-x" style="font-size: 3rem; color: #ccc;"></i>
+                        <h3 class="mt-3">No materials found</h3>
+                        <p class="text-muted">Get started by adding your first course material.</p>
+                        <a href="{% url 'admin_panel:add_material' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Material
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Materials pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Materials management JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Materials management page loaded');
+        
+        // Add any materials-specific JavaScript here
+        const deleteButtons = document.querySelectorAll('.btn-outline-danger');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const materialName = this.closest('.card').querySelector('.card-title').textContent;
+                const confirmDelete = confirm(`Are you sure you want to delete the material "${materialName}"? This action cannot be undone.`);
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+from django.urls import path
+from . import views
+
+app_name = 'admin_panel'
+
+urlpatterns = [
+    path('', views.dashboard, name='dashboard'),
+    path('trainers/', views.trainer_list, name='trainer_list'),
+    path('trainers/add/', views.add_instructor, name='add_instructor'),
+    path('trainers/edit/<int:instructor_id>/', views.edit_instructor, name='edit_instructor'),
+    path('trainers/delete/<int:instructor_id>/', views.delete_instructor, name='delete_instructor'),
+    path('students/', views.student_list, name='student_list'),
+    path('students/add/', views.add_student, name='add_student'),
+    path('students/edit/<int:student_id>/', views.edit_student, name='edit_student'),
+    path('students/delete/<int:student_id>/', views.delete_student, name='delete_student'),
+    path('courses/', views.course_list, name='course_list'),
+    path('courses/add/', views.add_course, name='add_course'),
+    path('courses/edit/<int:course_id>/', views.edit_course, name='edit_course'),
+    path('courses/delete/<int:course_id>/', views.delete_course, name='delete_course'),
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/add/', views.add_category, name='add_category'),
+    path('categories/edit/<int:category_id>/', views.edit_category, name='edit_category'),
+    path('categories/delete/<int:category_id>/', views.delete_category, name='delete_category'),
+    path('materials/', views.material_list, name='material_list'),
+    path('materials/add/', views.add_material, name='add_material'),
+    path('materials/edit/<int:material_id>/', views.edit_material, name='edit_material'),
+    path('materials/delete/<int:material_id>/', views.delete_material, name='delete_material'),
+    path('videos/', views.video_list, name='video_list'),
+    path('videos/add/', views.add_video, name='add_video'),
+    path('videos/edit/<int:video_id>/', views.edit_video, name='edit_video'),
+    path('videos/delete/<int:video_id>/', views.delete_video, name='delete_video'),
+    path('analytics/', views.analytics, name='analytics'),
+    path('settings/', views.settings, name='settings'),
+    path('contact/', views.contact, name='contact'),
+    path('about/', views.about, name='about'),
+]

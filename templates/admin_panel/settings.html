@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">System Settings</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-primary">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Tabs -->
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="settingsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">General</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="appearance-tab" data-bs-toggle="tab" data-bs-target="#appearance" type="button" role="tab">Appearance</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">Email</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab">Payment</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">Security</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="settingsTabContent">
+                        <!-- General Settings -->
+                        <div class="tab-pane fade show active" id="general" role="tabpanel">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>General Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="siteName" class="form-label">Site Name</label>
+                                            <input type="text" class="form-control" id="siteName" value="Learning Management System">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="siteDescription" class="form-label">Site Description</label>
+                                            <textarea class="form-control" id="siteDescription" rows="3">A comprehensive learning management system for online education.</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="adminEmail" class="form-label">Admin Email</label>
+                                            <input type="email" class="form-control" id="adminEmail" value="admin@example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="timezone" class="form-label">Timezone</label>
+                                            <select class="form-select" id="timezone">
+                                                <option selected>UTC</option>
+                                                <option>GMT</option>
+                                                <option>EST</option>
+                                                <option>PST</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="maintenanceMode">
+                                            <label class="form-check-label" for="maintenanceMode">Maintenance Mode</label>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appearance Settings -->
+                        <div class="tab-pane fade" id="appearance" role="tabpanel">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>Appearance Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="primaryColor" class="form-label">Primary Color</label>
+                                            <input type="color" class="form-control form-control-color" id="primaryColor" value="#007bff" title="Choose your color">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="logo" class="form-label">Logo</label>
+                                            <input class="form-control" type="file" id="logo">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="favicon" class="form-label">Favicon</label>
+                                            <input class="form-control" type="file" id="favicon">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="theme" class="form-label">Theme</label>
+                                            <select class="form-select" id="theme">
+                                                <option selected>Light</option>
+                                                <option>Dark</option>
+                                                <option>Auto</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Settings -->
+                        <div class="tab-pane fade" id="email" role="tabpanel">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>Email Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="smtpHost" class="form-label">SMTP Host</label>
+                                            <input type="text" class="form-control" id="smtpHost" value="smtp.example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="smtpPort" class="form-label">SMTP Port</label>
+                                            <input type="number" class="form-control" id="smtpPort" value="587">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="smtpUsername" class="form-label">SMTP Username</label>
+                                            <input type="text" class="form-control" id="smtpUsername" value="user@example.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="smtpPassword" class="form-label">SMTP Password</label>
+                                            <input type="password" class="form-control" id="smtpPassword" value="password">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="emailFrom" class="form-label">From Email</label>
+                                            <input type="email" class="form-control" id="emailFrom" value="noreply@example.com">
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary">Test Email Settings</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Settings -->
+                        <div class="tab-pane fade" id="payment" role="tabpanel">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>Payment Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="paymentGateway" class="form-label">Payment Gateway</label>
+                                            <select class="form-select" id="paymentGateway">
+                                                <option selected>Stripe</option>
+                                                <option>PayPal</option>
+                                                <option>Bank Transfer</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="stripePublicKey" class="form-label">Stripe Public Key</label>
+                                            <input type="text" class="form-control" id="stripePublicKey" value="pk_test_123456789">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="stripeSecretKey" class="form-label">Stripe Secret Key</label>
+                                            <input type="password" class="form-control" id="stripeSecretKey" value="sk_test_123456789">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="currency" class="form-label">Default Currency</label>
+                                            <select class="form-select" id="currency">
+                                                <option selected>USD</option>
+                                                <option>EUR</option>
+                                                <option>GBP</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Settings -->
+                        <div class="tab-pane fade" id="security" role="tabpanel">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5>Security Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="passwordMinLength" class="form-label">Minimum Password Length</label>
+                                            <input type="number" class="form-control" id="passwordMinLength" value="8">
+                                        </div>
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="requireSpecialChars" checked>
+                                            <label class="form-check-label" for="requireSpecialChars">Require Special Characters</label>
+                                        </div>
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="requireNumbers" checked>
+                                            <label class="form-check-label" for="requireNumbers">Require Numbers</label>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="sessionTimeout" class="form-label">Session Timeout (minutes)</label>
+                                            <input type="number" class="form-control" id="sessionTimeout" value="30">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="maxLoginAttempts" class="form-label">Max Login Attempts</label>
+                                            <input type="number" class="form-control" id="maxLoginAttempts" value="5">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Settings JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Settings page loaded');
+        
+        // Add any settings-specific JavaScript here
+        const saveButton = document.querySelector('.btn-primary');
+        saveButton.addEventListener('click', function() {
+            // Show success message
+            alert('Settings saved successfully!');
+        });
+    });
+</script>
+{% endblock %}

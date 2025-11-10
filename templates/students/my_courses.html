@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}My Courses - LMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mt-4">My Courses</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'students:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">My Courses</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Enrolled Courses</h5>
+                </div>
+                <div class="card-body">
+                    {% if page_obj %}
+                        <div class="row">
+                            {% for enrollment in page_obj %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        {% if enrollment.course.thumbnail %}
+                                            <img src="{{ enrollment.course.thumbnail.url }}" class="card-img-top" alt="{{ enrollment.course.title }}" style="height: 200px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title">{{ enrollment.course.title }}</h5>
+                                            <p class="card-text">{{ enrollment.course.description|truncatewords:15 }}</p>
+                                            <div class="mt-auto">
+                                                <p class="text-muted">
+                                                    <small>
+                                                        <i class="bi bi-tag"></i> {{ enrollment.course.category.name }}<br>
+                                                        <i class="bi bi-person"></i> {{ enrollment.course.instructor.full_name }}<br>
+                                                        <i class="bi bi-currency-dollar"></i> ${{ enrollment.course.price }}
+                                                    </small>
+                                                </p>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ enrollment.progress }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {{ enrollment.progress }}%
+                                                    </div>
+                                                </div>
+                                                <p class="mt-1">
+                                                    <small class="text-muted">Progress: {{ enrollment.progress }}%</small>
+                                                </p>
+                                                <a href="{% url 'courses:course_detail' enrollment.course.id %}" class="btn btn-primary">Continue Learning</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if page_obj.has_other_pages %}
+                            <nav aria-label="Course pagination">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Previous</span>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">Next</span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-book" style="font-size: 3rem; color: #ccc;"></i>
+                            <h4 class="mt-3">No Enrolled Courses</h4>
+                            <p>You are not enrolled in any courses yet.</p>
+                            <a href="{% url 'courses:course_list' %}" class="btn btn-primary">Browse Courses</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form_title }} - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ form_title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'admin_panel:course_list' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Course Title</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger">{{ form.title.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.code.id_for_label }}" class="form-label">Course Code</label>
+                                    {{ form.code }}
+                                    {% if form.code.errors %}
+                                        <div class="text-danger">{{ form.code.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger">{{ form.category.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.instructor.id_for_label }}" class="form-label">Instructor</label>
+                                    {{ form.instructor }}
+                                    {% if form.instructor.errors %}
+                                        <div class="text-danger">{{ form.instructor.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.price.id_for_label }}" class="form-label">Price ($)</label>
+                                    {{ form.price }}
+                                    {% if form.price.errors %}
+                                        <div class="text-danger">{{ form.price.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="text-danger">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.thumbnail.id_for_label }}" class="form-label">Thumbnail</label>
+                                    {{ form.thumbnail }}
+                                    {% if form.thumbnail.errors %}
+                                        <div class="text-danger">{{ form.thumbnail.errors }}</div>
+                                    {% endif %}
+                                    {% if course.thumbnail %}
+                                        <div class="mt-2">
+                                            <img src="{{ course.thumbnail.url }}" alt="Current thumbnail" class="img-thumbnail" style="max-width: 200px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    {{ form.is_published }}
+                                    <label for="{{ form.is_published.id_for_label }}" class="form-check-label">
+                                        Published
+                                    </label>
+                                    {% if form.is_published.errors %}
+                                        <div class="text-danger">{{ form.is_published.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">{{ submit_button }}</button>
+                                    {% if course %}
+                                        <a href="{% url 'admin_panel:delete_course' course.id %}" class="btn btn-danger"
+                                           onclick="return confirm('Are you sure you want to delete this course?')">
+                                            <i class="bi bi-trash"></i> Delete Course
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Course Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Fill in the course details:</p>
+                            <ul>
+                                <li><strong>Title:</strong> A descriptive name for the course</li>
+                                <li><strong>Code:</strong> Unique identifier for the course</li>
+                                <li><strong>Category:</strong> Select an appropriate category</li>
+                                <li><strong>Instructor:</strong> Assign an instructor</li>
+                                <li><strong>Price:</strong> Set the course price (0 for free)</li>
+                                <li><strong>Description:</strong> Detailed course description</li>
+                                <li><strong>Thumbnail:</strong> Visual representation of the course</li>
+                                <li><strong>Published:</strong> Toggle to make course visible to students</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Form validation and enhancement
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Course form loaded');
+        
+        // Add any form-specific JavaScript here
+        const form = document.querySelector('form');
+        const priceInput = document.getElementById('id_price');
+        
+        // Format price input
+        priceInput.addEventListener('input', function() {
+            let value = this.value.replace(/[^0-9.]/g, '');
+            if (value.indexOf('.') !== -1) {
+                const parts = value.split('.');
+                if (parts[1].length > 2) {
+                    parts[1] = parts[1].substring(0, 2);
+                    value = parts[0] + '.' + parts[1];
+                }
+            }
+            this.value = value;
+        });
+    });
+</script>
+{% endblock %}

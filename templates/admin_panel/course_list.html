@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Courses - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Manage Courses</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'admin_panel:add_course' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-lg"></i> Add New Course
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="GET" class="d-flex">
+                        <input class="form-control me-2" type="search" name="search" placeholder="Search courses..." value="{{ search_query }}">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <select class="form-select me-2" name="category" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <form method="GET">
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            <button type="submit" class="btn btn-outline-secondary">Filter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Table -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Course Title</th>
+                                    <th>Code</th>
+                                    <th>Category</th>
+                                    <th>Instructor</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in page_obj %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if course.thumbnail %}
+                                                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="bg-light me-2" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="bi bi-image" style="font-size: 1.5rem;"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ course.title }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ course.description|truncatewords:10 }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ course.code }}</td>
+                                        <td>{{ course.category.name }}</td>
+                                        <td>{{ course.instructor.full_name }}</td>
+                                        <td>${{ course.price }}</td>
+                                        <td>
+                                            {% if course.is_published %}
+                                                <span class="badge bg-success">Published</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Draft</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'admin_panel:edit_course' course.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-pencil"></i> Edit
+                                                </a>
+                                                <a href="{% url 'admin_panel:delete_course' course.id %}" class="btn btn-sm btn-outline-danger" 
+                                                   onclick="return confirm('Are you sure you want to delete this course?')">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No courses found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <nav aria-label="Course pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Previous</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Previous</span>
+                                    </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">Next</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Next</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Course management JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Course management page loaded');
+        
+        // Add any course-specific JavaScript here
+        const deleteButtons = document.querySelectorAll('.btn-outline-danger');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const courseTitle = this.closest('tr').querySelector('strong').textContent;
+                const confirmDelete = confirm(`Are you sure you want to delete the course "${courseTitle}"? This action cannot be undone.`);
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

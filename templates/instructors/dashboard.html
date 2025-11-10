@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Instructor Dashboard - LMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mt-4">Instructor Dashboard</h1>
+            <p class="lead">Welcome back, {{ user.first_name }}!</p>
+        </div>
+    </div>
+
+    {% if instructor %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if instructor.profile_picture %}
+                            <img src="{{ instructor.profile_picture.url }}" alt="{{ instructor.full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                                <i class="bi bi-person" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <h5>{{ instructor.full_name }}</h5>
+                        <p class="text-muted">{{ instructor.email }}</p>
+                        <a href="{% url 'instructors:profile' %}" class="btn btn-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>My Courses</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if courses %}
+                            <div class="row">
+                                {% for course in courses %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ course.title }}</h6>
+                                                <p class="card-text">{{ course.category.name }}</p>
+                                                <p class="text-muted">
+                                                    <small>
+                                                        <i class="bi bi-book"></i> {{ course.modules.count }} modules<br>
+                                                        <i class="bi bi-people"></i> {{ course.enrollments.count }} students
+                                                    </small>
+                                                </p>
+                                                <a href="{% url 'instructors:course_detail' course.id %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>You are not teaching any courses yet.</p>
+                            <a href="#" class="btn btn-primary">Create Course</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h4>Instructor Profile Required</h4>
+                    <p>You need to create an instructor profile to access your dashboard.</p>
+                    <a href="#" class="btn btn-primary">Create Profile</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

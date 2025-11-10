@@ -1,0 +1,66 @@
+<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                   href="{% url 'admin_panel:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'trainer_list' %}active{% endif %}" 
+                   href="{% url 'admin_panel:trainer_list' %}">
+                    <i class="bi bi-person-badge"></i> Trainers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_list' or request.resolver_match.url_name == 'add_student' or request.resolver_match.url_name == 'edit_student' %}active{% endif %}" 
+                   href="{% url 'admin_panel:student_list' %}">
+                    <i class="bi bi-people"></i> Students
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'course_list' or request.resolver_match.url_name == 'add_course' or request.resolver_match.url_name == 'edit_course' %}active{% endif %}" 
+                   href="{% url 'admin_panel:course_list' %}">
+                    <i class="bi bi-book"></i> Courses
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'material_list' %}active{% endif %}" 
+                   href="{% url 'admin_panel:material_list' %}">
+                    <i class="bi bi-file-earmark-text"></i> Materials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'video_list' %}active{% endif %}" 
+                   href="{% url 'admin_panel:video_list' %}">
+                    <i class="bi bi-camera-video"></i> Videos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}" 
+                   href="{% url 'admin_panel:analytics' %}">
+                    <i class="bi bi-bar-chart"></i> Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" 
+                   href="{% url 'admin_panel:settings' %}">
+                    <i class="bi bi-gear"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" 
+                   href="{% url 'admin_panel:contact' %}">
+                    <i class="bi bi-envelope"></i> Contact
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
+                   href="{% url 'admin_panel:about' %}">
+                    <i class="bi bi-info-circle"></i> About
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

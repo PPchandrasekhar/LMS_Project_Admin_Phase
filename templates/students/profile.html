@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - LMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mt-4">My Profile</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'students:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {% if student %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" alt="{{ student.full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                                <i class="bi bi-person" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <h5>{{ student.full_name }}</h5>
+                        <p class="text-muted">{{ student.email }}</p>
+                        <p>
+                            <span class="badge {% if student.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if student.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+                                <p><strong>First Name:</strong> {{ student.first_name }}</p>
+                                <p><strong>Last Name:</strong> {{ student.last_name }}</p>
+                                <p><strong>Email:</strong> {{ student.email }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Phone:</strong> {{ student.phone|default:"Not provided" }}</p>
+                                <p><strong>Date of Birth:</strong> {{ student.date_of_birth|date:"M d, Y"|default:"Not provided" }}</p>
+                                <p><strong>Enrollment Date:</strong> {{ student.enrollment_date|date:"M d, Y" }}</p>
+                                <p><strong>Status:</strong> 
+                                    <span class="badge {% if student.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if student.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="#" class="btn btn-primary">Edit Profile</a>
+                            <a href="#" class="btn btn-outline-secondary">Change Password</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h4>Student Profile Required</h4>
+                    <p>You need to create a student profile to access this page.</p>
+                    <a href="#" class="btn btn-primary">Create Profile</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}About - LMS Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'admin_panel/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">About LMS</h1>
+            </div>
+
+            <!-- About Content -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">System Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Learning Management System</h5>
+                                    <p class="lead">Version 1.0.0</p>
+                                    <p>A comprehensive learning management system designed to provide an exceptional online education experience. Our platform offers intuitive course management, student tracking, and analytics to help educators and learners achieve their goals.</p>
+                                    
+                                    <h5 class="mt-4">Key Features</h5>
+                                    <ul>
+                                        <li>Course Creation and Management</li>
+                                        <li>Student Enrollment and Tracking</li>
+                                        <li>Interactive Learning Materials</li>
+                                        <li>Video Lecture Support</li>
+                                        <li>Assignment and Quiz System</li>
+                                        <li>Progress Tracking and Analytics</li>
+                                        <li>Communication Tools</li>
+                                        <li>Multi-user Access Control</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-primary text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">System Status</h5>
+                                            <p class="card-text">All systems operational</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p class="mb-1">Uptime: 99.9%</p>
+                                                    <p class="mb-1">Response Time: 45ms</p>
+                                                </div>
+                                                <div>
+                                                    <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card mt-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Technical Specifications</h5>
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><strong>Framework:</strong></td>
+                                                        <td>Django 5.0.2</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Database:</strong></td>
+                                                        <td>SQLite 3.39.0</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Frontend:</strong></td>
+                                                        <td>Bootstrap 5.3, HTML5, CSS3, JavaScript</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Server:</strong></td>
+                                                        <td>Development Server</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>API Version:</strong></td>
+                                                        <td>v1.0</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Information -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Development Team</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                                                <i class="bi bi-person" style="font-size: 3rem;"></i>
+                                            </div>
+                                            <h5 class="card-title">John Developer</h5>
+                                            <p class="card-text">Lead Developer</p>
+                                            <p class="text-muted">Responsible for backend architecture and database design.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                                                <i class="bi bi-person" style="font-size: 3rem;"></i>
+                                            </div>
+                                            <h5 class="card-title">Jane Designer</h5>
+                                            <p class="card-text">UI/UX Designer</p>
+                                            <p class="text-muted">Creates intuitive user interfaces and engaging experiences.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                                                <i class="bi bi-person" style="font-size: 3rem;"></i>
+                                            </div>
+                                            <h5 class="card-title">Bob Tester</h5>
+                                            <p class="card-text">Quality Assurance</p>
+                                            <p class="text-muted">Ensures system reliability and performance.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Information -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Support & Documentation</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-book" style="font-size: 3rem; color: #007bff;"></i>
+                                            <h5 class="card-title mt-3">Documentation</h5>
+                                            <p class="card-text">Comprehensive guides and tutorials for using the LMS.</p>
+                                            <a href="#" class="btn btn-primary">View Documentation</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-life-preserver" style="font-size: 3rem; color: #28a745;"></i>
+                                            <h5 class="card-title mt-3">Support</h5>
+                                            <p class="card-text">Get help from our support team for any issues.</p>
+                                            <a href="#" class="btn btn-success">Contact Support</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-github" style="font-size: 3rem; color: #6f42c1;"></i>
+                                            <h5 class="card-title mt-3">Source Code</h5>
+                                            <p class="card-text">Access the open-source code on GitHub.</p>
+                                            <a href="#" class="btn btn-outline-dark">View on GitHub</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // About JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('About page loaded');
+        
+        // Add any about-specific JavaScript here
+    });
+</script>
+{% endblock %}

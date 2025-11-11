@@ -14,7 +14,9 @@
                 <h1 class="h2">My Schedule</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Add Event</button>
+                        <a href="{% url 'instructors:add_schedule_event' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Event
+                        </a>
                         <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                     </div>
                 </div>
@@ -32,6 +34,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Upcoming Events</h6>
                 </div>
                 <div class="card-body">
+                    {% if events %}
                     <div class="table-responsive">
                         <table class="table table-bordered" width="100%" cellspacing="0">
                             <thead>
@@ -45,42 +48,35 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for event in events %}
                                 <tr>
-                                    <td>Nov 15, 2025</td>
-                                    <td>10:00 AM - 12:00 PM</td>
-                                    <td>Python Basics Lecture</td>
-                                    <td>Introduction to Python</td>
-                                    <td>Room 101</td>
+                                    <td>{{ event.start_time|date:"M d, Y" }}</td>
+                                    <td>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        <span class="badge bg-primary">{{ event.get_event_type_display }}</span>
+                                        {{ event.title }}
+                                    </td>
+                                    <td>{{ event.course.title|default:"No course" }}</td>
+                                    <td>{{ event.location|default:"No location" }}</td>
+                                    <td>
+                                        <a href="{% url 'instructors:edit_schedule_event' event.id %}" class="btn btn-sm btn-primary">Edit</a>
+                                        <a href="{% url 'instructors:delete_schedule_event' event.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Nov 17, 2025</td>
-                                    <td>2:00 PM - 4:00 PM</td>
-                                    <td>Web Development Workshop</td>
-                                    <td>Full Stack Development</td>
-                                    <td>Lab 205</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Nov 20, 2025</td>
-                                    <td>9:00 AM - 11:00 AM</td>
-                                    <td>Database Design Session</td>
-                                    <td>Advanced SQL</td>
-                                    <td>Room 303</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
-                                    </td>
-                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-x" style="font-size: 3rem; color: #ccc;"></i>
+                        <h4 class="mt-3">No events scheduled</h4>
+                        <p class="mb-4">You don't have any events scheduled yet.</p>
+                        <a href="{% url 'instructors:add_schedule_event' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create Your First Event
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Assignment: {{ assignment.title }} - Student Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'students/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Submit Assignment: {{ assignment.title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'students:assignment_detail' assignment.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Assignment
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment Info -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">{{ assignment.title }}</h4>
+                <p><strong>Course:</strong> {{ assignment.course.title }}</p>
+                <p><strong>Due Date:</strong> {{ assignment.due_date|date:"M d, Y, g:i A" }}</p>
+                <p><strong>Maximum Points:</strong> {{ assignment.max_points }}</p>
+            </div>
+
+            <!-- Submission Form -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Submission</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if submission and submission.submitted_at %}
+                            <div class="alert alert-warning">
+                                <h5>Resubmitting Assignment</h5>
+                                <p>You previously submitted this assignment on {{ submission.submitted_at|date:"M d, Y, g:i A" }}. 
+                                Resubmitting will replace your previous submission.</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="submission_text" class="form-label">Submission Text</label>
+                            <textarea class="form-control" id="submission_text" name="submission_text" rows="6" 
+                                      placeholder="Enter your assignment response here...">{{ submission.submission_text|default:'' }}</textarea>
+                            <div class="form-text">You can provide your answer in text format above.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="submission_file" class="form-label">Upload File (Optional)</label>
+                            <input type="file" class="form-control" id="submission_file" name="submission_file">
+                            {% if submission.submission_file %}
+                                <div class="form-text mt-2">
+                                    <strong>Current file:</strong> <a href="{{ submission.submission_file.url }}" target="_blank">{{ submission.submission_file.name|truncatechars:30 }}</a>
+                                </div>
+                            {% endif %}
+                            <div class="form-text">You can also upload a file (PDF, DOC, etc.) if required.</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'students:assignment_detail' assignment.id %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Submit Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Assignment Description -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Assignment Description</h6>
+                </div>
+                <div class="card-body">
+                    <p>{{ assignment.description|linebreaks }}</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

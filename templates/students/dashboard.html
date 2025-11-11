@@ -6,48 +6,7 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'students:dashboard' %}">
-                            <i class="bi bi-speedometer2"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-book"></i>
-                            My Courses
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-file-earmark-text"></i>
-                            Assignments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-calendar"></i>
-                            Schedule
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-chat-dots"></i>
-                            Messages
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-gear"></i>
-                            Settings
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        {% include 'students/sidebar.html' %}
 
         <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -67,10 +26,10 @@
 
             <!-- Welcome Message -->
             <div class="alert alert-info" role="alert">
-                <h4 class="alert-heading">Welcome, {{ user.student.full_name }}!</h4>
+                <h4 class="alert-heading">Welcome, {{ student.full_name }}!</h4>
                 <p>You are logged in as a student. Here you can access your courses, assignments, and track your progress.</p>
                 <hr>
-                <p class="mb-0">Student ID: {{ user.student.student_id }}</p>
+                <p class="mb-0">Student ID: {{ student.student_id }}</p>
             </div>
 
             <!-- Key Metrics -->
@@ -83,7 +42,7 @@
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Enrolled Courses
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_enrollments }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bi bi-book fa-2x text-gray-300"></i>
@@ -101,7 +60,7 @@
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                         Completed Courses
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completed_courses }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bi bi-check-circle fa-2x text-gray-300"></i>
@@ -119,7 +78,7 @@
                                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                         Pending Assignments
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_assignments }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bi bi-file-earmark-text fa-2x text-gray-300"></i>
@@ -137,7 +96,7 @@
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                         Average Grade
                                     </div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0%</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ average_grade }}%</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="bi bi-star fa-2x text-gray-300"></i>
@@ -153,24 +112,75 @@
                 <div class="col-12">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Enrollments</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Activity</th>
                                             <th>Course</th>
-                                            <th>Date</th>
+                                            <th>Instructor</th>
+                                            <th>Enrollment Date</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td colspan="3" class="text-center">No recent activity</td>
-                                        </tr>
+                                        {% if recent_enrollments %}
+                                            {% for enrollment in recent_enrollments %}
+                                            <tr>
+                                                <td>{{ enrollment.course.title }}</td>
+                                                <td>{{ enrollment.course.instructor.full_name }}</td>
+                                                <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <span class="badge bg-{% if enrollment.completion_status == 'completed' %}success{% elif enrollment.completion_status == 'in_progress' %}warning{% else %}primary{% endif %}">
+                                                        {{ enrollment.get_completion_status_display }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="4" class="text-center">No recent enrollments</td>
+                                            </tr>
+                                        {% endif %}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'students:my_courses' %}" class="btn btn-primary btn-block">
+                                        <i class="bi bi-book"></i> My Courses
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'students:assignments' %}" class="btn btn-success btn-block">
+                                        <i class="bi bi-file-earmark-text"></i> Assignments
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'students:materials' %}" class="btn btn-info btn-block">
+                                        <i class="bi bi-folder"></i> Materials
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'students:videos' %}" class="btn btn-warning btn-block">
+                                        <i class="bi bi-camera-video"></i> Videos
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

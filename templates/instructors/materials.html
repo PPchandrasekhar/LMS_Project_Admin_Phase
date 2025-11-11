@@ -14,8 +14,9 @@
                 <h1 class="h2">Course Materials</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Upload Material</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">New Category</button>
+                        <a href="{% url 'instructors:add_material' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Material
+                        </a>
                     </div>
                 </div>
             </div>
@@ -23,76 +24,90 @@
             <!-- Welcome Message -->
             <div class="alert alert-info" role="alert">
                 <h4 class="alert-heading">Welcome, {{ instructor.full_name }}!</h4>
-                <p>Here you can manage all course materials for your courses.</p>
+                <p>Here you can manage all materials for your courses.</p>
             </div>
 
             <!-- Materials List -->
-            <div class="row">
-                {% for material in page_obj %}
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ material.title }}</h5>
-                            <p class="card-text">{{ material.description|truncatewords:15 }}</p>
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <a href="{{ material.file.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">Download</a>
-                                        <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    </div>
-                                    <small class="text-muted">{{ material.material_type|upper }}</small>
-                                </div>
-                                <div class="mt-2">
-                                    <small class="text-muted">Course: {{ material.course.title }}</small>
-                                </div>
-                                <div class="mt-1">
-                                    <small class="text-muted">Uploaded: {{ material.created_at|date:"M d, Y" }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Materials Overview</h6>
                 </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <h4>No materials found</h4>
-                        <p>You haven't uploaded any course materials yet.</p>
-                        <a href="#" class="btn btn-primary">Upload Material</a>
+                <div class="card-body">
+                    {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Course</th>
+                                    <th>Type</th>
+                                    <th>Uploaded</th>
+                                    <th>Size</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in page_obj %}
+                                <tr>
+                                    <td>{{ material.title }}</td>
+                                    <td>{{ material.course.title }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ material.get_material_type_display }}</span>
+                                    </td>
+                                    <td>{{ material.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ material.file_size }}</td>
+                                    <td>
+                                        <a href="{{ material.file.url }}" target="_blank" class="btn btn-sm btn-primary">View</a>
+                                        <!-- Edit and Delete actions would go here if implemented -->
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Materials pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: #ccc;"></i>
+                        <h4 class="mt-3">No materials found</h4>
+                        <p class="mb-4">You haven't added any materials yet.</p>
+                        <a href="{% url 'instructors:add_material' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Your First Material
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endfor %}
             </div>
-
-            <!-- Pagination -->
-            {% if page_obj.has_other_pages %}
-            <nav aria-label="Material pagination">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
         </main>
     </div>
 </div>

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ video.title }} - Student Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'students/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ video.title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'students:videos' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Videos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Player -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            {% if video.get_video_source %}
+                            <div class="ratio ratio-16x9">
+                                <video controls>
+                                    <source src="{{ video.get_video_source }}" type="video/{{ video.video_type }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> No video source available.
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <h4>Description</h4>
+                                <p>{{ video.description|linebreaks }}</p>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Course:</strong> {{ video.course.title }}</p>
+                                        <p><strong>Instructor:</strong> {{ video.course.instructor.full_name }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% if video.duration %}
+                                        <p><strong>Duration:</strong> {{ video.duration }}</p>
+                                        {% endif %}
+                                        <p><strong>Uploaded:</strong> {{ video.created_at|date:"F d, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Update view count when video is played
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.querySelector('video');
+    if (video) {
+        video.addEventListener('play', function() {
+            // In a real application, you would send an AJAX request to update the view count
+            console.log('Video started playing');
+        });
+    }
+});
+</script>
+{% endblock %}

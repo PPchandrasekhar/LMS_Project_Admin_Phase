@@ -81,9 +81,16 @@ class VideoForm(forms.ModelForm):
 
 
 class StudentForm(forms.ModelForm):
+    # Add a password field for the user account
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=False,
+        help_text="Leave blank to auto-generate a password"
+    )
+    
     class Meta:
         model = Student
-        fields = ['student_id', 'first_name', 'last_name', 'email', 'phone', 'date_of_birth', 'profile_picture', 'is_active']
+        fields = ['student_id', 'first_name', 'last_name', 'email', 'phone', 'date_of_birth', 'profile_picture', 'is_active', 'password']
         widgets = {
             'student_id': forms.TextInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -94,6 +101,47 @@ class StudentForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    
+    def save(self, commit=True):
+        student = super().save(commit=False)
+        
+        # If this is a new student or doesn't have a user yet
+        if not student.user:
+            from django.contrib.auth.models import User
+            import random
+            import string
+            
+            # Generate username from first and last name
+            username = f"{student.first_name.lower()}.{student.last_name.lower()}"
+            
+            # Make sure username is unique
+            original_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{original_username}{counter}"
+                counter += 1
+            
+            # Get or generate password
+            password = self.cleaned_data.get('password')
+            if not password:
+                # Generate a random password
+                password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+            
+            # Create the user
+            user = User.objects.create_user(
+                username=username,
+                email=student.email,
+                password=password,
+                first_name=student.first_name,
+                last_name=student.last_name
+            )
+            
+            # Associate the user with the student
+            student.user = user
+        
+        if commit:
+            student.save()
+        return student
 
 
 class InstructorForm(forms.ModelForm):

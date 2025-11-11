@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Materials - Student Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'students/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Course Materials</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Filter</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials List -->
+            {% if page_obj %}
+            <div class="row">
+                {% for material in page_obj %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ material.title }}</h5>
+                            <p class="card-text">{{ material.description|truncatewords:20 }}</p>
+                            <p class="text-muted">
+                                <small>
+                                    <i class="bi bi-book"></i> {{ material.course.title }}<br>
+                                    <i class="bi bi-filetype-{{ material.material_type }}"></i> {{ material.file_extension }} ({{ material.file_size }})<br>
+                                    <i class="bi bi-calendar"></i> {{ material.created_at|date:"M d, Y" }}
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            {% if material.material_type == 'pdf' or material.material_type == 'doc' or material.material_type == 'ppt' %}
+                            <a href="{{ material.file.url }}" class="btn btn-secondary btn-sm" target="_blank">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            {% endif %}
+                            <a href="{{ material.file.url }}" class="btn btn-primary btn-sm" download>
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle"></i> No materials available for your courses.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Materials pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i> No materials available for your courses.
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

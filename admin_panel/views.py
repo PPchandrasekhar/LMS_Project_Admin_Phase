@@ -596,8 +596,16 @@ def add_student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Student added successfully.')
+            student = form.save()
+            # Get the generated password if it was auto-generated
+            password = form.cleaned_data.get('password')
+            if not password:
+                # If no password was provided, it was auto-generated
+                # In a real application, you would send this to the student via email
+                # For now, we'll just show a message
+                messages.success(request, f'Student added successfully. Default password is "student123".')
+            else:
+                messages.success(request, 'Student added successfully.')
             return redirect('admin_panel:student_list')
     else:
         form = StudentForm()

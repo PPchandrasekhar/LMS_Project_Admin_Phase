@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import Instructor
+from .models import Instructor, ScheduleEvent
 from courses.models import Course, Module, Lesson, Material, Video
-from students.models import Assignment, AssignmentSubmission, Student, Enrollment
+from students.models import Student, Enrollment, Assignment, AssignmentSubmission
+from .forms import AssignmentForm, ScheduleEventForm
+from admin_panel.forms import MaterialForm, VideoForm
 
 @login_required
 def dashboard(request):
@@ -210,6 +212,13 @@ def assignments(request):
     # Get assignments for courses taught by this instructor
     assignments = Assignment.objects.filter(course__instructor=instructor).select_related('course')
     
+    # Add submission counts to each assignment
+    for assignment in assignments:
+        # Total submissions
+        assignment.total_submissions = assignment.submissions.count()
+        # Pending reviews (not graded)
+        assignment.pending_reviews = assignment.submissions.filter(is_graded=False).count()
+    
     context = {
         'instructor': instructor,
         'assignments': assignments,
@@ -373,15 +382,102 @@ def schedule(request):
         messages.error(request, 'Instructor profile not found.')
         return redirect('instructors:dashboard')
     
-    # For now, just render a basic schedule page
+    # Get schedule events for this instructor
+    events = ScheduleEvent.objects.filter(instructor=instructor).select_related('course').order_by('start_time')
+    
     context = {
         'instructor': instructor,
+        'events': events,
     }
     return render(request, 'instructors/schedule.html', context)
 
 
 @login_required
-def messages(request):
+def add_schedule_event(request):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    if request.method == 'POST':
+        form = ScheduleEventForm(instructor, request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.instructor = instructor
+            event.save()
+            messages.success(request, 'Event created successfully.')
+            return redirect('instructors:schedule')
+    else:
+        form = ScheduleEventForm(instructor=instructor)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'form_title': 'Create New Event',
+        'submit_button': 'Create Event',
+    }
+    return render(request, 'instructors/schedule_event_form.html', context)
+
+
+@login_required
+def edit_schedule_event(request, event_id):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    # Get the event (must be for this instructor)
+    event = get_object_or_404(ScheduleEvent, id=event_id, instructor=instructor)
+    
+    if request.method == 'POST':
+        form = ScheduleEventForm(instructor, request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event updated successfully.')
+            return redirect('instructors:schedule')
+    else:
+        form = ScheduleEventForm(instructor=instructor, instance=event)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'event': event,
+        'form_title': 'Edit Event',
+        'submit_button': 'Update Event',
+    }
+    return render(request, 'instructors/schedule_event_form.html', context)
+
+
+@login_required
+def delete_schedule_event(request, event_id):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    # Get the event (must be for this instructor)
+    event = get_object_or_404(ScheduleEvent, id=event_id, instructor=instructor)
+    
+    if request.method == 'POST':
+        event.delete()
+        messages.success(request, 'Event deleted successfully.')
+        return redirect('instructors:schedule')
+    
+    context = {
+        'instructor': instructor,
+        'event': event,
+    }
+    return render(request, 'instructors/schedule_event_confirm_delete.html', context)
+
+
+@login_required
+def messages_view(request):
     # Get the instructor profile
     try:
         instructor = Instructor.objects.get(user=request.user)
@@ -442,3 +538,156 @@ def contact(request):
         'instructor': instructor,
     }
     return render(request, 'instructors/contact.html', context)
+
+
+@login_required
+def add_assignment(request):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    if request.method == 'POST':
+        form = AssignmentForm(instructor, request.POST)
+        if form.is_valid():
+            assignment = form.save()
+            messages.success(request, 'Assignment created successfully.')
+            return redirect('instructors:assignments')
+    else:
+        form = AssignmentForm(instructor=instructor)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'form_title': 'Create New Assignment',
+        'submit_button': 'Create Assignment',
+    }
+    return render(request, 'instructors/assignment_form.html', context)
+
+
+@login_required
+def edit_assignment(request, assignment_id):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    # Get the assignment (must be for a course taught by this instructor)
+    assignment = get_object_or_404(Assignment, id=assignment_id, course__instructor=instructor)
+    
+    if request.method == 'POST':
+        form = AssignmentForm(instructor, request.POST, instance=assignment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Assignment updated successfully.')
+            return redirect('instructors:assignment_detail', assignment_id=assignment.id)
+    else:
+        form = AssignmentForm(instructor=instructor, instance=assignment)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'assignment': assignment,
+        'form_title': 'Edit Assignment',
+        'submit_button': 'Update Assignment',
+    }
+    return render(request, 'instructors/assignment_form.html', context)
+
+
+@login_required
+def delete_assignment(request, assignment_id):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    # Get the assignment (must be for a course taught by this instructor)
+    assignment = get_object_or_404(Assignment, id=assignment_id, course__instructor=instructor)
+    
+    if request.method == 'POST':
+        assignment.delete()
+        messages.success(request, 'Assignment deleted successfully.')
+        return redirect('instructors:assignments')
+    
+    context = {
+        'instructor': instructor,
+        'assignment': assignment,
+    }
+    return render(request, 'instructors/assignment_confirm_delete.html', context)
+
+
+@login_required
+def add_material(request):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, request.FILES)
+        if form.is_valid():
+            material = form.save(commit=False)
+            material.uploaded_by = request.user
+            material.save()
+            messages.success(request, 'Material added successfully.')
+            return redirect('instructors:materials')
+    else:
+        form = MaterialForm()
+        # Filter courses to only those taught by this instructor
+        form.fields['course'].queryset = Course.objects.filter(instructor=instructor)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'form_title': 'Add New Material',
+        'submit_button': 'Add Material',
+    }
+    return render(request, 'instructors/material_form.html', context)
+
+
+@login_required
+def add_video(request):
+    # Get the instructor profile
+    try:
+        instructor = Instructor.objects.get(user=request.user)
+    except Instructor.DoesNotExist:
+        messages.error(request, 'Instructor profile not found.')
+        return redirect('instructors:dashboard')
+    
+    if request.method == 'POST':
+        form = VideoForm(request.POST, request.FILES)
+        if form.is_valid():
+            video = form.save(commit=False)
+            video.uploaded_by = request.user
+            video.save()
+            messages.success(request, 'Video added successfully.')
+            return redirect('instructors:videos')
+    else:
+        form = VideoForm()
+        # Filter courses to only those taught by this instructor
+        form.fields['course'].queryset = Course.objects.filter(instructor=instructor)
+    
+    context = {
+        'instructor': instructor,
+        'form': form,
+        'form_title': 'Add New Video',
+        'submit_button': 'Add Video',
+    }
+    return render(request, 'instructors/video_form.html', context)
+
+
+@login_required
+def test_messages(request):
+    messages.success(request, 'Test message - success')
+    messages.error(request, 'Test message - error')
+    messages.info(request, 'Test message - info')
+    messages.warning(request, 'Test message - warning')
+    return redirect('instructors:dashboard')

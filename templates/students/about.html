@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Student Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'students/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">About</h1>
+            </div>
+
+            <!-- About Content -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Learning Management System</h3>
+                            <p class="card-text">
+                                Welcome to our Learning Management System (LMS). This platform is designed to provide students with a comprehensive online learning experience.
+                            </p>
+                            
+                            <h4 class="mt-4">Features</h4>
+                            <ul>
+                                <li>Access to course materials and resources</li>
+                                <li>Video lectures and tutorials</li>
+                                <li>Assignment submission and tracking</li>
+                                <li>Interactive schedule and calendar</li>
+                                <li>Communication with instructors</li>
+                                <li>Progress tracking and reporting</li>
+                            </ul>
+                            
+                            <h4 class="mt-4">How to Use</h4>
+                            <p>
+                                Navigate through the sidebar to access different sections of your student panel:
+                            </p>
+                            <ul>
+                                <li><strong>Dashboard</strong> - Overview of your courses and recent activity</li>
+                                <li><strong>My Courses</strong> - View and manage your enrolled courses</li>
+                                <li><strong>Assignments</strong> - View and submit assignments</li>
+                                <li><strong>Schedule</strong> - View upcoming events and sessions</li>
+                                <li><strong>Materials</strong> - Download course materials</li>
+                                <li><strong>Videos</strong> - Watch course videos</li>
+                                <li><strong>Messages</strong> - Communicate with instructors and classmates</li>
+                                <li><strong>Settings</strong> - Update your profile and preferences</li>
+                            </ul>
+                            
+                            <h4 class="mt-4">Support</h4>
+                            <p>
+                                If you need assistance, please visit the <a href="{% url 'students:contact' %}">Contact</a> page or reach out to your course instructors.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

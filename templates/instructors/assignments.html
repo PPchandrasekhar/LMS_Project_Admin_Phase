@@ -14,7 +14,9 @@
                 <h1 class="h2">Assignments</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Create Assignment</button>
+                        <a href="{% url 'instructors:add_assignment' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create Assignment
+                        </a>
                     </div>
                 </div>
             </div>
@@ -49,12 +51,12 @@
                                     <td>{{ assignment.title }}</td>
                                     <td>{{ assignment.course.title }}</td>
                                     <td>{{ assignment.due_date|date:"M d, Y" }}</td>
-                                    <td>0</td>
-                                    <td>0</td>
+                                    <td>{{ assignment.total_submissions }}</td>
+                                    <td>{{ assignment.pending_reviews }}</td>
                                     <td>
                                         <a href="{% url 'instructors:assignment_detail' assignment.id %}" class="btn btn-sm btn-primary">View</a>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        <a href="{% url 'instructors:edit_assignment' assignment.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <a href="{% url 'instructors:delete_assignment' assignment.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
                                     </td>
                                 </tr>
                                 {% empty %}

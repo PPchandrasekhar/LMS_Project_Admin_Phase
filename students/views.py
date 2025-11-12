@@ -1,10 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import Student, Enrollment, Assignment, AssignmentSubmission
+from django.db.models import Q
+from django.utils import timezone
 from courses.models import Course, Material, Video
-from instructors.models import ScheduleEvent
+from students.models import Student, Enrollment, AssignmentSubmission, Assignment, Attendance
+from instructors.models import Instructor, ScheduleEvent
 
 @login_required
 def dashboard(request):
@@ -415,3 +417,84 @@ def contact(request):
         'student': student,
     }
     return render(request, 'students/contact.html', context)
+
+
+@login_required
+def daily_attendance(request):
+    # Get the student profile
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        messages.error(request, 'Student profile not found.')
+        return redirect('students:dashboard')
+    
+    # Get today's date
+    today = timezone.now().date()
+    
+    # Get courses the student is enrolled in
+    enrollments = Enrollment.objects.filter(
+        student=student,
+        completion_status__in=['enrolled', 'in_progress']
+    ).select_related('course', 'course__instructor')
+    
+    # Get existing attendance records for today
+    existing_attendances = Attendance.objects.filter(
+        student=student,
+        session_date=today
+    ).select_related('course')
+    
+    # Create a dictionary for easy lookup
+    attendance_dict = {att.course_id: att for att in existing_attendances}
+    
+    context = {
+        'student': student,
+        'enrollments': enrollments,
+        'today': today,
+        'attendance_dict': attendance_dict,
+    }
+    return render(request, 'students/daily_attendance.html', context)
+
+
+@login_required
+def submit_daily_attendance(request):
+    # Get the student profile
+    try:
+        student = Student.objects.get(user=request.user)
+    except Student.DoesNotExist:
+        messages.error(request, 'Student profile not found.')
+        return redirect('students:dashboard')
+    
+    if request.method == 'POST':
+        today = timezone.now().date()
+        recorded_by = request.user
+        
+        # Process attendance for each course
+        enrollment_ids = request.POST.getlist('enrollment_ids')
+        notes = request.POST.get('notes', '')
+        
+        for enrollment_id in enrollment_ids:
+            status_key = f'status_{enrollment_id}'
+            if status_key in request.POST:
+                status = request.POST[status_key]
+                
+                try:
+                    enrollment = Enrollment.objects.get(id=enrollment_id, student=student)
+                    
+                    # Create or update attendance record
+                    Attendance.objects.update_or_create(
+                        student=student,
+                        course=enrollment.course,
+                        session_date=today,
+                        defaults={
+                            'status': status,
+                            'notes': notes,
+                            'recorded_by': recorded_by
+                        }
+                    )
+                except Enrollment.DoesNotExist:
+                    pass
+        
+        messages.success(request, 'Your daily attendance has been submitted successfully.')
+        return redirect('students:daily_attendance')
+    
+    return redirect('students:daily_attendance')

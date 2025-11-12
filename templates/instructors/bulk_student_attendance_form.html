@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form_title }} - Trainer Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ form_title }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{% url 'instructors:student_attendance' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Selection -->
+            {% if not course %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Select Course</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="course" class="form-label">Course</label>
+                                <select class="form-select" id="course" name="course" required>
+                                    <option value="">Select a course</option>
+                                    {% for c in courses %}
+                                        <option value="{{ c.id }}">{{ c.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Select Course</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Bulk Attendance Form -->
+            {% if course %}
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ course.title }} - Bulk Attendance</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="bi bi-info-circle"></i> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="{{ form.session_date.id_for_label }}" class="form-label">{{ form.session_date.label }}</label>
+                                {{ form.session_date }}
+                                {% if form.session_date.help_text %}
+                                    <div class="form-text">{{ form.session_date.help_text }}</div>
+                                {% endif %}
+                                {% if form.session_date.errors %}
+                                    <div class="text-danger">{{ form.session_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                                {{ form.notes }}
+                                {% if form.notes.help_text %}
+                                    <div class="form-text">{{ form.notes.help_text }}</div>
+                                {% endif %}
+                                {% if form.notes.errors %}
+                                    <div class="text-danger">{{ form.notes.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Students List -->
+                        <h5 class="mb-3">Student Attendance</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Student ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in course.enrollments.all %}
+                                        {% if enrollment.completion_status == 'enrolled' or enrollment.completion_status == 'in_progress' %}
+                                        <tr>
+                                            <td>{{ enrollment.student.full_name }}</td>
+                                            <td>{{ enrollment.student.student_id }}</td>
+                                            <td>
+                                                <select name="status_{{ enrollment.student.id }}" class="form-select">
+                                                    <option value="present">Present</option>
+                                                    <option value="absent">Absent</option>
+                                                    <option value="late">Late</option>
+                                                    <option value="excused">Excused</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No students enrolled in this course</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'instructors:student_attendance' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {{ submit_button }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

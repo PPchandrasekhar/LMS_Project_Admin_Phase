@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load instructor_attendance_extras %}
+
+{% block title %}Daily Attendance - Trainer Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'instructors/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Daily Attendance</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-calendar"></i> {{ today|date:"F d, Y" }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'instructors:submit_daily_attendance' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes (Optional)</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Add any notes for today's attendance"></textarea>
+                </div>
+                
+                {% for course in courses %}
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-journal-text"></i> {{ course.title }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="course_ids" value="{{ course.id }}">
+                        
+                        {% if course.enrollments.all %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Student ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in course.enrollments.all %}
+                                        {% if enrollment.completion_status == 'enrolled' or enrollment.completion_status == 'in_progress' %}
+                                        <tr>
+                                            <td>{{ enrollment.student.full_name }}</td>
+                                            <td>{{ enrollment.student.student_id }}</td>
+                                            <td>
+                                                <select name="status_{{ course.id }}_{{ enrollment.student.id }}" class="form-select">
+                                                    <option value="present" {% if attendance_by_course|get_item:course.id|get_attendance_status:enrollment.student.id == 'present' %}selected{% endif %}>Present</option>
+                                                    <option value="absent" {% if attendance_by_course|get_item:course.id|get_attendance_status:enrollment.student.id == 'absent' %}selected{% endif %}>Absent</option>
+                                                    <option value="late" {% if attendance_by_course|get_item:course.id|get_attendance_status:enrollment.student.id == 'late' %}selected{% endif %}>Late</option>
+                                                    <option value="excused" {% if attendance_by_course|get_item:course.id|get_attendance_status:enrollment.student.id == 'excused' %}selected{% endif %}>Excused</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No students are currently enrolled in this course.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> You are not currently teaching any courses.
+                </div>
+                {% endfor %}
+                
+                {% if courses %}
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> Submit Daily Attendance
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </main>
+    </div>
+</div>
+{% endblock %}

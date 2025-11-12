@@ -1,11 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import JsonResponse
+from django.db.models import Q, Count
+from django.utils import timezone
 from courses.models import Course, Category, Material, Video
-from students.models import Student, Enrollment, AssignmentSubmission
+from students.models import Student, Enrollment, AssignmentSubmission, Attendance, TrainerAttendance
+from students.forms import AttendanceForm, BulkAttendanceForm, TrainerAttendanceForm
 from instructors.models import Instructor
 from .forms import CourseForm, StudentForm, InstructorForm, CategoryForm, MaterialForm, VideoForm, EnrollmentForm
 
@@ -921,6 +923,110 @@ def delete_enrollment(request, enrollment_id):
         'enrollment': enrollment,
     }
     return render(request, 'admin_panel/enrollment_confirm_delete.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def daily_attendance(request):
+    """Daily attendance report page for admin"""
+    # Get the selected date or default to today
+    selected_date_str = request.GET.get('date')
+    if selected_date_str:
+        try:
+            selected_date = timezone.datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = timezone.now().date()
+    else:
+        selected_date = timezone.now().date()
+    
+    # Get attendance records for the selected date
+    student_attendances = Attendance.objects.filter(session_date=selected_date).select_related('student', 'course')
+    trainer_attendances = TrainerAttendance.objects.filter(session_date=selected_date).select_related('trainer', 'course')
+    
+    # Get summary statistics
+    total_students = Student.objects.count()
+    total_trainers = Instructor.objects.count()
+    students_present = student_attendances.filter(status='present').count()
+    trainers_present = trainer_attendances.filter(status='present').count()
+    
+    context = {
+        'selected_date': selected_date,
+        'student_attendances': student_attendances,
+        'trainer_attendances': trainer_attendances,
+        'total_students': total_students,
+        'total_trainers': total_trainers,
+        'students_present': students_present,
+        'trainers_present': trainers_present,
+    }
+    return render(request, 'admin_panel/daily_attendance.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def submit_daily_attendance(request):
+    """Submit daily attendance for students and trainers"""
+    if request.method == 'POST':
+        today = timezone.now().date()
+        recorded_by = request.user
+        
+        # Process student attendance
+        student_ids = request.POST.getlist('student_ids')
+        student_statuses = request.POST.getlist('student_status')
+        student_courses = request.POST.getlist('student_course')
+        student_notes = request.POST.get('student_notes', '')
+        
+        for i, student_id in enumerate(student_ids):
+            if i < len(student_statuses) and i < len(student_courses):
+                try:
+                    student = Student.objects.get(id=student_id)
+                    course = Course.objects.get(id=student_courses[i])
+                    status = student_statuses[i]
+                    
+                    # Create or update attendance record
+                    Attendance.objects.update_or_create(
+                        student=student,
+                        course=course,
+                        session_date=today,
+                        defaults={
+                            'status': status,
+                            'notes': student_notes,
+                            'recorded_by': recorded_by
+                        }
+                    )
+                except (Student.DoesNotExist, Course.DoesNotExist):
+                    pass
+        
+        # Process trainer attendance
+        trainer_ids = request.POST.getlist('trainer_ids')
+        trainer_statuses = request.POST.getlist('trainer_status')
+        trainer_courses = request.POST.getlist('trainer_course')
+        trainer_notes = request.POST.get('trainer_notes', '')
+        
+        for i, trainer_id in enumerate(trainer_ids):
+            if i < len(trainer_statuses) and i < len(trainer_courses):
+                try:
+                    trainer = Instructor.objects.get(id=trainer_id)
+                    course = Course.objects.get(id=trainer_courses[i])
+                    status = trainer_statuses[i]
+                    
+                    # Create or update trainer attendance record
+                    TrainerAttendance.objects.update_or_create(
+                        trainer=trainer,
+                        course=course,
+                        session_date=today,
+                        defaults={
+                            'status': status,
+                            'notes': trainer_notes,
+                            'recorded_by': recorded_by
+                        }
+                    )
+                except (Instructor.DoesNotExist, Course.DoesNotExist):
+                    pass
+        
+        messages.success(request, 'Daily attendance records submitted successfully.')
+        return redirect('admin_panel:daily_attendance')
+    
+    return redirect('admin_panel:daily_attendance')
 
 
 from django.contrib.auth import authenticate, login, logout

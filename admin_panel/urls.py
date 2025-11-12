@@ -38,4 +38,5 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('contact/', views.contact, name='contact'),
     path('about/', views.about, name='about'),
+    path('daily-attendance/', views.daily_attendance, name='daily_attendance'),
 ]

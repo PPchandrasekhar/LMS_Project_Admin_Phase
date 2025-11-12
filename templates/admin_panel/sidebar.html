@@ -32,6 +32,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'daily_attendance' %}active{% endif %}" 
+                   href="{% url 'admin_panel:daily_attendance' %}">
+                    <i class="bi bi-calendar-check"></i> Daily Attendance
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {% if request.resolver_match.url_name == 'material_list' %}active{% endif %}" 
                    href="{% url 'admin_panel:material_list' %}">
                     <i class="bi bi-file-earmark-text"></i> Materials

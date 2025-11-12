@@ -76,3 +76,53 @@ class Assignment(models.Model):
 
     def __str__(self):
         return f"{self.course.title} - {self.title}"
+
+
+class Attendance(models.Model):
+    ATTENDANCE_STATUS = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('late', 'Late'),
+        ('excused', 'Excused'),
+    ]
+    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='attendances')
+    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='attendances')
+    session_date = models.DateField()
+    status = models.CharField(max_length=10, choices=ATTENDANCE_STATUS, default='present')
+    notes = models.TextField(blank=True)
+    recorded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student.full_name} - {self.course.title} - {self.session_date}"
+
+    class Meta:
+        unique_together = ('student', 'course', 'session_date')
+        ordering = ['-session_date']
+
+
+class TrainerAttendance(models.Model):
+    ATTENDANCE_STATUS = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('late', 'Late'),
+        ('excused', 'Excused'),
+    ]
+    
+    trainer = models.ForeignKey('instructors.Instructor', on_delete=models.CASCADE, related_name='attendances')
+    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='trainer_attendances')
+    session_date = models.DateField()
+    status = models.CharField(max_length=10, choices=ATTENDANCE_STATUS, default='present')
+    notes = models.TextField(blank=True)
+    recorded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.trainer.full_name} - {self.course.title} - {self.session_date}"
+
+    class Meta:
+        unique_together = ('trainer', 'course', 'session_date')
+        ordering = ['-session_date']

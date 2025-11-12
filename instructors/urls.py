@@ -26,4 +26,12 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path('student-attendance/', views.student_attendance, name='student_attendance'),
+    path('student-attendance/add/', views.add_student_attendance, name='add_student_attendance'),
+    path('student-attendance/bulk/', views.bulk_student_attendance, name='bulk_student_attendance'),
+    path('daily-attendance/', views.daily_attendance, name='daily_attendance'),
+    path('daily-attendance/submit/', views.submit_daily_attendance, name='submit_daily_attendance'),
+    path('instructor-daily-attendance/', views.instructor_daily_attendance, name='instructor_daily_attendance'),
+    path('instructor-daily-attendance/submit/', views.submit_instructor_daily_attendance, name='submit_instructor_daily_attendance'),
+    path('student-attendance-report/', views.student_attendance_report, name='student_attendance_report'),
 ]
